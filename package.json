@@ -1,0 +1,11 @@
+{
+  "name": "trakt-notion",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.18.0",
+    "axios": "^1.6.0",
+    "@notionhq/client": "^2.2.15",
+    "dotenv": "^16.0.0"
+  }
+}

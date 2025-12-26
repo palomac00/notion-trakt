@@ -12,12 +12,9 @@ const HISTORY_DB = process.env.HISTORY_DB_ID;
 app.post('/trakt-webhook', async (req, res) => {
   try {
     const { action, episode, movie } = req.body;
-    console.log('Webhook received:', { action, episode: episode?.title, movie: movie?.title });
-    
     if (action === 'scrobble') {
       const media = episode || movie;
       
-      // Add to History
       await notion.pages.create({
         parent: { database_id: HISTORY_DB },
         properties: {
@@ -28,15 +25,9 @@ app.post('/trakt-webhook', async (req, res) => {
         }
       });
       
-      console.log('Added to history:', media.title);
-      
-      // Update or create in Movies/TV
       const existing = await notion.databases.query({
         database_id: MOVIES_DB,
-        filter: {
-          property: 'Trakt ID',
-          number: { equals: media.ids.trakt }
-        }
+        filter: { property: 'Trakt ID', number: { equals: media.ids.trakt } }
       });
       
       const properties = {
@@ -49,17 +40,9 @@ app.post('/trakt-webhook', async (req, res) => {
       };
       
       if (existing.results.length > 0) {
-        await notion.pages.update({
-          page_id: existing.results[0].id,
-          properties
-        });
-        console.log('Updated in Movies/TV:', media.title);
+        await notion.pages.update({ page_id: existing.results[0].id, properties });
       } else {
-        await notion.pages.create({
-          parent: { database_id: MOVIES_DB },
-          properties
-        });
-        console.log('Created in Movies/TV:', media.title);
+        await notion.pages.create({ parent: { database_id: MOVIES_DB }, properties });
       }
     }
     res.sendStatus(200);

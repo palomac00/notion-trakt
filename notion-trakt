@@ -1,4 +1,0 @@
-git remote remove origin
-git remote add origin https://github.com/palomac00/notion-trakt.git
-git branch -M main
-git push -u origin main
